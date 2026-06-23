@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Design System */
+@layer base {
+    :root {
+        --color-primary: 79 70 229;
+        --color-success: 16 185 129;
+        --color-warning: 245 158 11;
+        --color-danger: 239 68 68;
+    }
+
+    body {
+        @apply font-sans antialiased;
+    }
+}
+
+@layer components {
+    /* Glassmorphism Card */
+    .glass-card {
+        @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
+    }
+
+    /* Gradient Mesh Background */
+    .gradient-mesh {
+        background:
+            radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+            radial-gradient(at 80% 50%, rgba(236, 72, 153, 0.04) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+    }
+
+    /* Skeleton Loader */
+    .skeleton {
+        @apply bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 bg-[length:200%_100%] animate-shimmer rounded-lg;
+    }
+
+    /* Stagger Animation Delays */
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .stagger-4 { animation-delay: 0.4s; }
+    .stagger-5 { animation-delay: 0.5s; }
+
+    /* Budget Progress Ring */
+    .progress-ring__circle {
+        transition: stroke-dashoffset 0.5s ease-in-out;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+
+    /* Sidebar Active Indicator */
+    .nav-active-indicator {
+        @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-600 rounded-r-full transition-all duration-300;
+    }
+
+    /* Toast Notification */
+    .toast {
+        @apply fixed top-4 right-4 z-[9999] max-w-sm w-full animate-slide-in-right;
+    }
+
+    .toast-enter {
+        animation: slideInRight 0.4s ease-out;
+    }
+
+    .toast-exit {
+        animation: slideInRight 0.3s ease-in reverse;
+    }
+
+    /* Floating Action Button */
+    .fab {
+        @apply fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-xl shadow-primary-600/25 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-2xl;
+    }
+
+    /* Stat Card Hover */
+    .stat-card {
+        @apply bg-white rounded-2xl border border-slate-100 shadow-sm p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    }
+
+    /* Trip Card */
+    .trip-card {
+        @apply bg-white rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden;
+    }
+}
+
+/* Toast Progress Bar */
+.toast-progress {
+    @apply h-1 bg-primary-500/30 rounded-full overflow-hidden;
+}
+
+.toast-progress-bar {
+    @apply h-full bg-primary-500 rounded-full transition-all duration-100;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+}
+
+/* Print styles */
+@media print {
+    .no-print { display: none !important; }
+}
