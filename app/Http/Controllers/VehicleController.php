@@ -10,7 +10,9 @@ class VehicleController extends Controller
 {
     public function index()
     {
-        $vehicles = auth()->user()->vehicles()->withCount('trips')->get();
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        $vehicles = $user->vehicles()->withCount('trips')->get();
         return view('vehicles.index', compact('vehicles'));
     }
 
@@ -24,12 +26,15 @@ class VehicleController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
         // If this is default, or if there is no vehicle yet, set it default
-        $hasVehicles = auth()->user()->vehicles()->exists();
+        $hasVehicles = $user->vehicles()->exists();
         if (empty($hasVehicles)) {
             $data['is_default'] = true;
         } elseif (!empty($data['is_default'])) {
-            auth()->user()->vehicles()->update(['is_default' => false]);
+            $user->vehicles()->update(['is_default' => false]);
         }
 
         Vehicle::create($data);
@@ -54,8 +59,11 @@ class VehicleController extends Controller
 
         $data = $request->validated();
 
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
         if (!empty($data['is_default'])) {
-            auth()->user()->vehicles()->where('id', '!=', $vehicle->id)->update(['is_default' => false]);
+            $user->vehicles()->where('id', '!=', $vehicle->id)->update(['is_default' => false]);
         }
 
         $vehicle->update($data);
@@ -76,9 +84,12 @@ class VehicleController extends Controller
 
         $vehicle->delete();
 
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
         // Ensure at least one vehicle is default if there are any left
-        $firstVehicle = auth()->user()->vehicles()->first();
-        if ($firstVehicle && !auth()->user()->vehicles()->where('is_default', true)->exists()) {
+        $firstVehicle = $user->vehicles()->first();
+        if ($firstVehicle && !$user->vehicles()->where('is_default', true)->exists()) {
             $firstVehicle->update(['is_default' => true]);
         }
 
@@ -92,7 +103,10 @@ class VehicleController extends Controller
             abort(403);
         }
 
-        auth()->user()->vehicles()->update(['is_default' => false]);
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        $user->vehicles()->update(['is_default' => false]);
         $vehicle->update(['is_default' => true]);
 
         return redirect()->route('vehicles.index')

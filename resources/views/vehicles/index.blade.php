@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center w-full">
             <div>
                 <h2 class="font-extrabold text-xl text-slate-800 leading-tight">Kendaraan Saya</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Kelola daftar kendaraan untuk perhitungan BBM</p>
+                <p class="text-xs text-slate-400 mt-0.5">Kelola daftar kendaraan untuk perhitungan BBM perjalanan</p>
             </div>
-            <a href="{{ route('vehicles.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-indigo-600/10">
+            <a href="{{ route('vehicles.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-indigo-600/10">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -28,58 +28,64 @@
                 <a href="{{ route('vehicles.create') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-indigo-600/10">Tambah Kendaraan Pertama</a>
             </div>
             @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                @foreach($vehicles as $vehicle)
-                <div class="trip-card group animate-fade-in" style="animation-delay: {{ $loop->index * 0.1 }}s">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($vehicles as $index => $vehicle)
+                <div class="trip-card group bg-white rounded-3xl border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 overflow-hidden animate-fade-in" style="animation-delay: {{ $index * 0.1 }}s">
+                    <!-- Top colored accent -->
+                    <div class="h-2 bg-gradient-to-r {{ $vehicle->is_default ? 'from-indigo-500 to-violet-600' : 'from-slate-300 to-slate-400' }}"></div>
+
                     <div class="p-6">
                         <!-- Header -->
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex items-center gap-3">
+                        <div class="flex items-start justify-between mb-5">
+                            <div class="flex items-center gap-3.5">
                                 <div class="w-14 h-14 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center text-3xl border border-slate-100 group-hover:scale-105 transition-transform">
                                     {{ $vehicle->type->icon() }}
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-base text-slate-800 group-hover:text-indigo-600 transition">{{ $vehicle->name }}</h3>
-                                    <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{{ $vehicle->type->label() }}</span>
+                                    <h3 class="font-extrabold text-base text-slate-800 group-hover:text-indigo-600 transition">{{ $vehicle->name }}</h3>
+                                    <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">{{ $vehicle->type->label() }}</span>
                                 </div>
                             </div>
                             @if($vehicle->is_default)
-                            <span class="px-2.5 py-1 text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full">Default</span>
+                            <span class="px-2.5 py-1 text-[9px] font-extrabold bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full uppercase tracking-wider shadow-sm">Default</span>
                             @endif
                         </div>
 
                         <!-- Fuel Efficiency Badge -->
-                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 mb-4 border border-emerald-100/50">
+                        <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-50 rounded-2xl p-4 mb-5 border border-emerald-100/50 shadow-inner">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] text-emerald-600 font-semibold">Efisiensi BBM</span>
-                                <span class="text-lg font-extrabold text-emerald-700">{{ $vehicle->fuel_consumption }} <span class="text-[10px] font-medium">km/L</span></span>
+                                <div>
+                                    <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider block">Efisiensi BBM</span>
+                                    <span class="text-[10px] text-slate-400 font-medium">Estimasi rata-rata</span>
+                                </div>
+                                <span class="text-2xl font-black text-emerald-700">{{ $vehicle->fuel_consumption }} <span class="text-xs font-semibold text-emerald-600">km/L</span></span>
                             </div>
                         </div>
 
                         <!-- Details -->
-                        <div class="space-y-2.5 text-sm">
+                        <div class="space-y-3 text-sm bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-400">Jenis BBM</span>
-                                <span class="text-xs font-semibold text-slate-700">{{ $vehicle->fuel_type }}</span>
+                                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Jenis BBM</span>
+                                <span class="text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-100">{{ $vehicle->fuel_type }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-400">Harga BBM</span>
-                                <span class="text-xs font-semibold text-slate-700">Rp {{ number_format($vehicle->fuel_price, 0, ',', '.') }}/L</span>
+                                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Harga BBM</span>
+                                <span class="text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-100">Rp {{ number_format($vehicle->fuel_price, 0, ',', '.') }}/L</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-400">Digunakan</span>
-                                <span class="text-xs font-semibold text-slate-700">{{ $vehicle->trips_count }} Trip</span>
+                                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Digunakan</span>
+                                <span class="text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-100">{{ $vehicle->trips_count }} Kali Perjalanan</span>
                             </div>
                         </div>
 
                         <!-- Actions -->
-                        <div class="flex items-center gap-2 mt-5 pt-4 border-t border-slate-50">
-                            <a href="{{ route('vehicles.edit', $vehicle) }}" class="flex-1 text-center py-2 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-xl text-xs font-semibold text-slate-600 transition">Edit</a>
+                        <div class="flex items-center gap-2 mt-5 pt-4 border-t border-slate-100/80">
+                            <a href="{{ route('vehicles.edit', $vehicle) }}" class="flex-1 text-center py-2 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 transition duration-200">Edit</a>
 
                             @if(!$vehicle->is_default)
                             <form method="POST" action="{{ route('vehicles.set-default', $vehicle) }}" class="flex-1">
                                 @csrf
-                                <button type="submit" class="w-full text-center py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 text-indigo-700 rounded-xl text-xs font-semibold transition">Set Default</button>
+                                <button type="submit" class="w-full text-center py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition duration-200">Set Default</button>
                             </form>
                             @endif
 
@@ -87,7 +93,7 @@
                             <form method="POST" action="{{ route('vehicles.destroy', $vehicle) }}" onsubmit="return confirm('Hapus kendaraan ini?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="p-2 hover:bg-rose-50 text-rose-400 rounded-xl border border-transparent hover:border-rose-100 transition" title="Hapus">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>

@@ -9,7 +9,9 @@ class TripTemplateController extends Controller
 {
     public function index()
     {
-        $templates = auth()->user()->tripTemplates()->latest()->get();
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        $templates = $user->tripTemplates()->latest()->get();
         return view('templates.index', compact('templates'));
     }
 

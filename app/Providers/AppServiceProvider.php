@@ -29,7 +29,9 @@ class AppServiceProvider extends ServiceProvider
         // Share common data with all views that use app layout
         View::composer('layouts.app', function ($view) {
             if (auth()->check()) {
-                $view->with('sharedTripsCount', auth()->user()->sharedTrips()->count());
+                /** @var \App\Models\User $user */
+                $user = auth()->user();
+                $view->with('sharedTripsCount', $user->sharedTrips()->count());
             }
         });
 

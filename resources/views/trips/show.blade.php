@@ -212,20 +212,45 @@
                 @endif
 
                 @if($weather)
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4 animate-slide-up">
-                    <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center shrink-0 text-2xl">{{ $weather['current']['icon'] }}</div>
-                    <div class="flex-1">
-                        <span class="text-[10px] text-slate-400 block">Cuaca di {{ $weather['location'] ?? 'Tujuan' }}</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xl font-extrabold text-slate-800">{{ $weather['current']['temp'] }}&deg;C</span>
-                            <span class="text-xs text-slate-500 capitalize">{{ $weather['current']['description'] }}</span>
+                <div class="bg-white rounded-3xl border border-slate-100/80 shadow-sm p-5 animate-slide-up">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center shrink-0 text-3xl">{{ $weather['current']['icon'] }}</div>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Cuaca di {{ $weather['location'] ?? 'Tujuan' }}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-black text-slate-800">{{ $weather['current']['temp'] }}&deg;C</span>
+                                <span class="text-xs text-slate-500 font-semibold capitalize truncate">{{ $weather['current']['description'] }}</span>
+                            </div>
                         </div>
-                        @if(!empty($weather['tips']))
-                        <p class="text-[10px] text-amber-600 mt-1">
-                            {{ is_array($weather['tips']) ? implode('. ', $weather['tips']) : $weather['tips'] }}
-                        </p>
-                        @endif
                     </div>
+                    
+                    @php
+                        $tip = $weather['travel_tip'] ?? $weather['tips'] ?? '';
+                    @endphp
+                    @if(!empty($tip))
+                    <div class="mt-3.5 p-3 bg-amber-50/50 border border-amber-100/50 rounded-2xl flex items-start gap-2 text-[11px] text-amber-800 font-medium">
+                        <span class="text-base leading-none">💡</span>
+                        <p class="leading-relaxed">
+                            {{ is_array($tip) ? implode('. ', $tip) : $tip }}
+                        </p>
+                    </div>
+                    @endif
+
+                    <!-- Hourly Forecast Row -->
+                    @if(!empty($weather['forecast']))
+                    <div class="mt-4 pt-3 border-t border-slate-100/80">
+                        <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider block mb-2.5">Prakiraan Tiap Jam</span>
+                        <div class="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-thin">
+                            @foreach($weather['forecast'] as $f)
+                            <div class="flex flex-col items-center justify-center bg-slate-50/50 border border-slate-100/50 rounded-xl px-2.5 py-2 min-w-[58px] text-center">
+                                <span class="text-[9px] font-bold text-slate-400">{{ $f['time'] }}</span>
+                                <span class="text-xl my-1">{{ $f['icon'] }}</span>
+                                <span class="text-xs font-black text-slate-700">{{ $f['temp'] }}&deg;</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 @endif
             </div>
@@ -703,8 +728,8 @@
         const TRIP_DEST_LNG = {{ $trip->destination_lng ?? 'null' }};
         const TRIP_DEST_NAME = @json($trip->destination_name);
         const TRIP_GEOMETRY = @json($trip->route_geometry);
-        const TRIP_WAYPOINTS = @json($trip->waypoints->map(fn($wp) => ['lat' => $wp->latitude, 'lng' => $wp->longitude, 'name' => $wp->name])->values());
-        const TRIP_EXPENSES = @json($trip->expenses->filter(fn($e) => $e->latitude && $e->longitude)->map(fn($e) => ['lat' => $e->latitude, 'lng' => $e->longitude, 'label' => $e->category->icon() . ' ' . $e->category->label(), 'amount' => number_format($e->amount, 0, ',', '.')])->values());
+        const TRIP_WAYPOINTS = {!! json_encode($waypointsData) !!};
+        const TRIP_EXPENSES = {!! json_encode($expensesData) !!};
 
         function tripShow() {
             return {

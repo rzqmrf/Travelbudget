@@ -143,7 +143,33 @@ class TripController extends Controller
 
         $googleMapsApiKey = config('services.google.maps_api_key');
 
-        return view('trips.show', compact('trip', 'budgetStatus', 'prediction', 'expensesByCategory', 'userTags', 'trafficStatus', 'weather', 'googleMapsApiKey'));
+        $waypointsData = $trip->waypoints->map(fn($wp) => [
+            'lat' => $wp->latitude,
+            'lng' => $wp->longitude,
+            'name' => $wp->name
+        ])->values();
+
+        $expensesData = $trip->expenses
+            ->filter(fn($e) => $e->latitude && $e->longitude)
+            ->map(fn($e) => [
+                'lat' => $e->latitude,
+                'lng' => $e->longitude,
+                'label' => $e->category->icon() . ' ' . $e->category->label(),
+                'amount' => number_format($e->amount, 0, ',', '.')
+            ])->values();
+
+        return view('trips.show', compact(
+            'trip',
+            'budgetStatus',
+            'prediction',
+            'expensesByCategory',
+            'userTags',
+            'trafficStatus',
+            'weather',
+            'googleMapsApiKey',
+            'waypointsData',
+            'expensesData'
+        ));
     }
 
     public function edit(Trip $trip)

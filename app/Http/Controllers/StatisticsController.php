@@ -9,6 +9,7 @@ class StatisticsController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
         $trips = $user->trips()->completed()->with('expenses')->latest('completed_at')->get();
 
