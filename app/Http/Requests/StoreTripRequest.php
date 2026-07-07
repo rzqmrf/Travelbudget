@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTripRequest extends FormRequest
 {
@@ -15,7 +16,10 @@ class StoreTripRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'vehicle_id' => ['required', 'exists:vehicles,id'],
+            'vehicle_id' => [
+                'required',
+                Rule::exists('vehicles', 'id')->where('user_id', $this->user()->id),
+            ],
             'budget_amount' => ['required', 'numeric', 'min:0'],
             'daily_budget_limit' => ['nullable', 'numeric', 'min:0'],
             'origin_name' => ['required', 'string', 'max:255'],

@@ -170,9 +170,7 @@
             };
 
             // 1. Category Doughnut
-            const categoryData = {
-                !!json_encode($categoryData) !!
-            };
+            const categoryData = {!! json_encode($categoryData) !!};
             new Chart(document.getElementById('categoryChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -208,9 +206,7 @@
             });
 
             // 2. Monthly Line
-            const monthlyData = {
-                !!json_encode($formattedMonthlyData) !!
-            };
+            const monthlyData = {!! json_encode($formattedMonthlyData) !!};
             const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
             const gradient = monthlyCtx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, 'rgba(79, 70, 229, 0.15)');
@@ -271,9 +267,7 @@
             });
 
             // 3. Trips Bar
-            const tripData = {
-                !!json_encode($tripData) !!
-            };
+            const tripData = {!! json_encode($tripData) !!};
             new Chart(document.getElementById('tripsChart').getContext('2d'), {
                 type: 'bar',
                 data: {

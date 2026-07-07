@@ -41,6 +41,7 @@ class ExpenseController extends Controller
     public function update(StoreExpenseRequest $request, Trip $trip, Expense $expense)
     {
         $this->authorize('update', $trip);
+        abort_unless($expense->trip_id === $trip->id, 404);
 
         $data = $request->validated();
 
@@ -66,6 +67,7 @@ class ExpenseController extends Controller
     public function destroy(Trip $trip, Expense $expense)
     {
         $this->authorize('update', $trip);
+        abort_unless($expense->trip_id === $trip->id, 404);
 
         $expense->delete();
 
@@ -83,7 +85,7 @@ class ExpenseController extends Controller
             $query->where('category', $request->category);
         }
         if ($request->filled('tag')) {
-            $query->whereHas('tags', fn($q) => $q->where('expense_tags.id', $request->tag));
+            $query->whereHas('tags', fn ($q) => $q->where('expense_tags.id', $request->tag));
         }
         if ($request->filled('date_from')) {
             $query->whereDate('spent_at', '>=', $request->date_from);

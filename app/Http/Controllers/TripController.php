@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\TripStatus;
 use App\Http\Requests\StoreTripRequest;
 use App\Models\Trip;
-use App\Models\TripRoute;
 use App\Models\TripTemplate;
 use App\Services\BudgetCalculator;
 use App\Services\BudgetPredictor;
 use App\Services\FuelCalculator;
 use App\Services\RouteService;
 use App\Services\WeatherService;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class TripController extends Controller
 {
@@ -24,7 +23,7 @@ class TripController extends Controller
         $status = $request->get('status');
         $trips = auth()->user()->trips()
             ->with('vehicle', 'expenses')
-            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($status, fn ($q) => $q->where('status', $status))
             ->latest()
             ->paginate(10);
 
@@ -62,35 +61,37 @@ class TripController extends Controller
         if (is_string($routesData)) {
             $routesData = json_decode($routesData, true) ?? [];
         }
+        $routesData = is_array($routesData) ? array_values($routesData) : [];
         unset($data['routes']);
 
         // Determine active geometry and estimates from selected route if provided
         $selectedRouteIndex = null;
         foreach ($routesData as $index => $rData) {
-            if (!empty($rData['is_selected'])) {
+            if (! empty($rData['is_selected'])) {
                 $selectedRouteIndex = $index;
                 break;
             }
         }
 
         // If none is selected but routes exist, select the first one
-        if ($selectedRouteIndex === null && !empty($routesData)) {
+        if ($selectedRouteIndex === null && ! empty($routesData)) {
             $routesData[0]['is_selected'] = true;
             $selectedRouteIndex = 0;
         }
 
         if ($selectedRouteIndex !== null) {
-            $baseDistance  = $routesData[$selectedRouteIndex]['distance_km'];
-            $baseDuration  = $routesData[$selectedRouteIndex]['duration_minutes'];
-            $baseFuelCost  = $routesData[$selectedRouteIndex]['estimated_fuel_cost'];
+            $selectedRoute = $routesData[$selectedRouteIndex];
+            $baseDistance = (float) ($selectedRoute['distance_km'] ?? 0);
+            $baseDuration = (int) ($selectedRoute['duration_minutes'] ?? 0);
+            $baseFuelCost = (float) ($selectedRoute['estimated_fuel_cost'] ?? 0);
 
             // Double values for round trip
-            $multiplier = !empty($data['is_round_trip']) ? 2 : 1;
+            $multiplier = ! empty($data['is_round_trip']) ? 2 : 1;
 
-            $data['distance_km']          = $baseDistance * $multiplier;
-            $data['duration_minutes']     = $baseDuration * $multiplier;
-            $data['estimated_fuel_cost']  = $baseFuelCost * $multiplier;
-            $data['route_geometry']       = $routesData[$selectedRouteIndex]['geometry'] ?? null;
+            $data['distance_km'] = $baseDistance * $multiplier;
+            $data['duration_minutes'] = $baseDuration * $multiplier;
+            $data['estimated_fuel_cost'] = $baseFuelCost * $multiplier;
+            $data['route_geometry'] = $selectedRoute['geometry'] ?? null;
         }
 
         $trip = Trip::create($data);
@@ -98,25 +99,25 @@ class TripController extends Controller
         // Save routes
         foreach ($routesData as $rData) {
             $trip->routes()->create([
-                'route_name'          => $rData['route_name'],
-                'distance_km'         => $rData['distance_km'],
-                'duration_minutes'    => $rData['duration_minutes'],
-                'estimated_fuel_cost' => $rData['estimated_fuel_cost'],
-                'route_geometry'      => $rData['geometry'] ?? null,
-                'is_selected'         => $rData['is_selected'] ?? false,
-                'route_summary'       => $rData['summary'] ?? null,
+                'route_name' => $rData['route_name'] ?? 'Rute',
+                'distance_km' => (float) ($rData['distance_km'] ?? 0),
+                'duration_minutes' => (int) ($rData['duration_minutes'] ?? 0),
+                'estimated_fuel_cost' => (float) ($rData['estimated_fuel_cost'] ?? 0),
+                'route_geometry' => $rData['geometry'] ?? null,
+                'is_selected' => $rData['is_selected'] ?? false,
+                'route_summary' => $rData['summary'] ?? null,
             ]);
         }
 
         // Save waypoints
         foreach ($waypointsData as $index => $wpData) {
             $trip->waypoints()->create([
-                'name'                   => $wpData['name'],
-                'latitude'               => $wpData['latitude'],
-                'longitude'              => $wpData['longitude'],
-                'order_index'            => $wpData['order_index'] ?? $index,
-                'stay_duration_minutes'  => $wpData['stay_duration_minutes'] ?? 0,
-                'notes'                  => $wpData['notes'] ?? null,
+                'name' => $wpData['name'],
+                'latitude' => $wpData['latitude'],
+                'longitude' => $wpData['longitude'],
+                'order_index' => $wpData['order_index'] ?? $index,
+                'stay_duration_minutes' => $wpData['stay_duration_minutes'] ?? 0,
+                'notes' => $wpData['notes'] ?? null,
             ]);
         }
 
@@ -133,8 +134,8 @@ class TripController extends Controller
         $prediction = BudgetPredictor::predict($trip);
 
         $expensesByCategory = $trip->expenses
-            ->groupBy(fn($item) => $item->category->value)
-            ->map(fn($items) => $items->sum('amount'));
+            ->groupBy(fn ($item) => $item->category->value)
+            ->map(fn ($items) => $items->sum('amount'));
 
         $userTags = auth()->user()->expenseTags()->get();
         $trafficStatus = $trip->status->value === 'active' ? RouteService::getTrafficAwareETA($trip) : null;
@@ -149,6 +150,7 @@ class TripController extends Controller
     {
         $this->authorize('update', $trip);
         $vehicles = auth()->user()->vehicles()->get();
+
         return view('trips.edit', compact('trip', 'vehicles'));
     }
 
@@ -178,7 +180,7 @@ class TripController extends Controller
     {
         $this->authorize('update', $trip);
         $trip->update([
-            'status'     => TripStatus::Active,
+            'status' => TripStatus::Active,
             'started_at' => now(),
         ]);
 
@@ -190,7 +192,7 @@ class TripController extends Controller
     {
         $this->authorize('update', $trip);
         $trip->update([
-            'status'       => TripStatus::Completed,
+            'status' => TripStatus::Completed,
             'completed_at' => now(),
         ]);
 
@@ -214,11 +216,11 @@ class TripController extends Controller
         $this->authorize('update', $trip);
 
         $data = $request->validate([
-            'name'                   => 'required|string|max:255',
-            'latitude'               => 'required|numeric',
-            'longitude'              => 'required|numeric',
-            'stay_duration_minutes'  => 'nullable|integer|min:0',
-            'notes'                  => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'stay_duration_minutes' => 'nullable|integer|min:0',
+            'notes' => 'nullable|string',
         ]);
 
         $maxOrder = $trip->waypoints()->max('order_index') ?? -1;
@@ -250,7 +252,7 @@ class TripController extends Controller
         $this->authorize('update', $trip);
 
         $data = $request->validate([
-            'order'   => 'required|array',
+            'order' => 'required|array',
             'order.*' => 'integer|exists:trip_waypoints,id',
         ]);
 
@@ -269,20 +271,20 @@ class TripController extends Controller
         $this->authorize('view', $trip);
 
         $template = TripTemplate::create([
-            'user_id'               => auth()->id(),
-            'name'                  => $trip->name . ' (Template)',
-            'origin_name'           => $trip->origin_name,
-            'origin_lat'            => $trip->origin_lat,
-            'origin_lng'            => $trip->origin_lng,
-            'destination_name'      => $trip->destination_name,
-            'destination_lat'       => $trip->destination_lat,
-            'destination_lng'       => $trip->destination_lng,
-            'default_budget'        => $trip->budget_amount,
-            'default_vehicle_type'  => $trip->vehicle?->type?->value,
-            'waypoints_json'        => $trip->waypoints->map(fn($wp) => [
-                'name'                  => $wp->name,
-                'latitude'              => $wp->latitude,
-                'longitude'             => $wp->longitude,
+            'user_id' => auth()->id(),
+            'name' => $trip->name.' (Template)',
+            'origin_name' => $trip->origin_name,
+            'origin_lat' => $trip->origin_lat,
+            'origin_lng' => $trip->origin_lng,
+            'destination_name' => $trip->destination_name,
+            'destination_lat' => $trip->destination_lat,
+            'destination_lng' => $trip->destination_lng,
+            'default_budget' => $trip->budget_amount,
+            'default_vehicle_type' => $trip->vehicle?->type?->value,
+            'waypoints_json' => $trip->waypoints->map(fn ($wp) => [
+                'name' => $wp->name,
+                'latitude' => $wp->latitude,
+                'longitude' => $wp->longitude,
                 'stay_duration_minutes' => $wp->stay_duration_minutes,
             ])->toArray(),
             'notes' => $trip->notes,
@@ -309,20 +311,24 @@ class TripController extends Controller
 
         $coordinates[] = [$trip->destination_lat, $trip->destination_lng];
 
-        if (count($coordinates) < 2) return;
+        if (count($coordinates) < 2) {
+            return;
+        }
 
         $result = RouteService::getMultiSegmentRoute($coordinates);
 
-        if (empty($result['routes'])) return;
+        if (empty($result['routes'])) {
+            return;
+        }
 
         $best = $result['routes'][0];
 
         $multiplier = $trip->is_round_trip ? 2 : 1;
 
         $trip->update([
-            'distance_km'         => $best['distance_km'] * $multiplier,
-            'duration_minutes'    => $best['duration_minutes'] * $multiplier,
-            'route_geometry'      => $best['geometry'],
+            'distance_km' => $best['distance_km'] * $multiplier,
+            'duration_minutes' => $best['duration_minutes'] * $multiplier,
+            'route_geometry' => $best['geometry'],
         ]);
 
         // Recalculate fuel cost based on vehicle

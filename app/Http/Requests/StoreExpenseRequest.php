@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\ExpenseCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreExpenseRequest extends FormRequest
@@ -27,7 +28,9 @@ class StoreExpenseRequest extends FormRequest
             'is_recurring' => ['sometimes', 'boolean'],
             'recurring_interval' => ['nullable', 'string', 'in:daily,weekly,monthly'],
             'tags' => ['nullable', 'array'],
-            'tags.*' => ['exists:expense_tags,id'],
+            'tags.*' => [
+                Rule::exists('expense_tags', 'id')->where('user_id', $this->user()->id),
+            ],
         ];
     }
 }
