@@ -7,10 +7,16 @@
         @endif
         <style>
             #map {
-                height: 500px;
+                height: 320px;
                 border-radius: 1.5rem;
                 box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
                 border: 1px solid rgb(241 245 249);
+            }
+
+            @media (min-width: 768px) {
+                #map {
+                    height: 500px;
+                }
             }
 
             .route-card {
@@ -309,14 +315,14 @@
                         <input type="hidden" name="routes" :value="JSON.stringify(routes)">
 
                         <!-- Submit Button -->
-                        <div class="flex justify-end bg-white p-6 rounded-2xl border border-slate-100 shadow-sm" x-show="selectedRouteIndex !== null" x-cloak>
-                            <div class="flex items-center gap-3">
-                                <div class="text-right" x-show="selectedRouteIndex !== null">
-                                    <p class="text-xs text-slate-400">Total Estimasi Bensin</p>
-                                    <p class="text-lg font-extrabold text-indigo-700"
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm" x-show="selectedRouteIndex !== null" x-cloak>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                                <div class="text-left sm:text-right" x-show="selectedRouteIndex !== null">
+                                    <p class="text-xs text-slate-400 dark:text-slate-500">Total Estimasi Bensin</p>
+                                    <p class="text-lg font-extrabold text-indigo-700 dark:text-indigo-400"
                                         x-text="'Rp ' + formatRupiah(currentFuelCost())"></p>
                                 </div>
-                                <x-primary-button>
+                                <x-primary-button class="w-full sm:w-auto justify-center py-3">
                                     Simpan Rencana Perjalanan 🚀
                                 </x-primary-button>
                             </div>

@@ -9,9 +9,7 @@ class ExpenseTagController extends Controller
 {
     public function index()
     {
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-        $tags = $user->expenseTags()->latest()->get();
+        $tags = auth()->user()->expenseTags()->latest()->get();
         return response()->json($tags);
     }
 

@@ -7,9 +7,15 @@
     @endif
     <style>
         #trip-map {
-            height: 480px;
+            height: 320px;
             border-radius: 1.5rem;
             border: 1px solid rgb(241 245 249);
+        }
+
+        @media (min-width: 768px) {
+            #trip-map {
+                height: 480px;
+            }
         }
 
         .tab-panel {
@@ -187,37 +193,37 @@
             @if($trafficStatus || $weather)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 @if($trafficStatus && $trafficStatus['eta'])
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4 animate-slide-up">
-                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
+                <div class="glass-card rounded-[2rem] p-5 border border-white/60 flex items-center gap-4 animate-slide-up">
+                    <div class="w-12 h-12 bg-blue-50/80 rounded-2xl flex items-center justify-center shrink-0 border border-blue-100/50">
                         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <span class="text-[10px] text-slate-400 block">ETA &amp; Lalu Lintas</span>
-                        <span class="text-xl font-extrabold text-slate-800">{{ $trafficStatus['eta'] }}</span>
+                        <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">ETA &amp; Lalu Lintas</span>
+                        <span class="text-xl font-black text-slate-800">{{ $trafficStatus['eta'] }}</span>
                         <div class="flex items-center gap-2 mt-1">
                             @php
                             $tl = $trafficStatus['traffic_level'];
                             $tc = ['light'=>'bg-emerald-500','moderate'=>'bg-amber-500','heavy'=>'bg-rose-500'][$tl] ?? 'bg-slate-400';
                             $tlabel = ['light'=>'Lancar','moderate'=>'Sedang','heavy'=>'Macet'][$tl] ?? 'N/A';
                             @endphp
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-700 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $tc }}"></span> {{ $tlabel }}
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-extrabold bg-slate-100 text-slate-700 rounded-full border border-slate-200/50">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $tc }} shadow-sm"></span> {{ $tlabel }}
                             </span>
-                            <span class="text-[10px] text-slate-400">{{ $trafficStatus['remaining_minutes'] }} mnt tersisa</span>
+                            <span class="text-[10px] text-slate-400 font-medium">{{ $trafficStatus['remaining_minutes'] }} mnt tersisa</span>
                         </div>
                     </div>
                 </div>
                 @endif
 
                 @if($weather)
-                <div class="bg-white rounded-3xl border border-slate-100/80 shadow-sm p-5 animate-slide-up">
+                <div class="glass-card rounded-[2rem] border border-white/60 p-6 animate-slide-up">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center shrink-0 text-3xl">{{ $weather['current']['icon'] }}</div>
+                        <div class="w-12 h-12 bg-sky-50/80 rounded-2xl flex items-center justify-center shrink-0 text-3xl border border-sky-100/50">{{ $weather['current']['icon'] }}</div>
                         <div class="flex-1 min-w-0">
                             <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Cuaca di {{ $weather['location'] ?? 'Tujuan' }}</span>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 mt-0.5">
                                 <span class="text-xl font-black text-slate-800">{{ $weather['current']['temp'] }}&deg;C</span>
                                 <span class="text-xs text-slate-500 font-semibold capitalize truncate">{{ $weather['current']['description'] }}</span>
                             </div>
@@ -228,7 +234,7 @@
                         $tip = $weather['travel_tip'] ?? $weather['tips'] ?? '';
                     @endphp
                     @if(!empty($tip))
-                    <div class="mt-3.5 p-3 bg-amber-50/50 border border-amber-100/50 rounded-2xl flex items-start gap-2 text-[11px] text-amber-800 font-medium">
+                    <div class="mt-3.5 p-3.5 bg-amber-50/60 border border-amber-100/40 rounded-2xl flex items-start gap-2.5 text-[11px] text-amber-800 font-semibold leading-relaxed shadow-sm">
                         <span class="text-base leading-none">💡</span>
                         <p class="leading-relaxed">
                             {{ is_array($tip) ? implode('. ', $tip) : $tip }}
@@ -238,11 +244,11 @@
 
                     <!-- Hourly Forecast Row -->
                     @if(!empty($weather['forecast']))
-                    <div class="mt-4 pt-3 border-t border-slate-100/80">
+                    <div class="mt-4 pt-3 border-t border-slate-100/60">
                         <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider block mb-2.5">Prakiraan Tiap Jam</span>
                         <div class="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-thin">
                             @foreach($weather['forecast'] as $f)
-                            <div class="flex flex-col items-center justify-center bg-slate-50/50 border border-slate-100/50 rounded-xl px-2.5 py-2 min-w-[58px] text-center">
+                            <div class="flex flex-col items-center justify-center bg-slate-50/40 border border-slate-100/40 rounded-xl px-2.5 py-2 min-w-[58px] text-center backdrop-blur-sm">
                                 <span class="text-[9px] font-bold text-slate-400">{{ $f['time'] }}</span>
                                 <span class="text-xl my-1">{{ $f['icon'] }}</span>
                                 <span class="text-xs font-black text-slate-700">{{ $f['temp'] }}&deg;</span>
@@ -283,18 +289,18 @@
             @endif
 
             <!-- Tabs Navigation -->
-            <div class="flex gap-1 border-b border-slate-100 mb-6 overflow-x-auto no-scrollbar">
-                <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'text-indigo-700 border-indigo-600' : 'text-slate-400 border-transparent hover:text-slate-600'" class="tab-btn relative px-5 py-3 text-sm font-semibold whitespace-nowrap transition border-b-2">
+            <div class="flex gap-2 p-1.5 bg-slate-100/80 backdrop-blur rounded-[1.5rem] border border-slate-200/20 mb-6 overflow-x-auto no-scrollbar max-w-max">
+                <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'" class="px-5 py-2.5 text-xs font-bold rounded-xl whitespace-nowrap transition duration-200">
                     Ringkasan
                 </button>
-                <button @click="activeTab = 'expenses'" :class="activeTab === 'expenses' ? 'text-indigo-700 border-indigo-600' : 'text-slate-400 border-transparent hover:text-slate-600'" class="tab-btn relative px-5 py-3 text-sm font-semibold whitespace-nowrap transition border-b-2">
-                    Pengeluaran <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-500 rounded-full">{{ $trip->expenses->count() }}</span>
+                <button @click="activeTab = 'expenses'" :class="activeTab === 'expenses' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'" class="px-5 py-2.5 text-xs font-bold rounded-xl whitespace-nowrap transition duration-200">
+                    Pengeluaran <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-slate-100/80 text-slate-500 rounded-full">{{ $trip->expenses->count() }}</span>
                 </button>
-                <button @click="activeTab = 'route'" :class="activeTab === 'route' ? 'text-indigo-700 border-indigo-600' : 'text-slate-400 border-transparent hover:text-slate-600'" class="tab-btn relative px-5 py-3 text-sm font-semibold whitespace-nowrap transition border-b-2">
+                <button @click="activeTab = 'route'" :class="activeTab === 'route' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'" class="px-5 py-2.5 text-xs font-bold rounded-xl whitespace-nowrap transition duration-200">
                     Rute &amp; Peta
                 </button>
-                <button @click="activeTab = 'sharing'" :class="activeTab === 'sharing' ? 'text-indigo-700 border-indigo-600' : 'text-slate-400 border-transparent hover:text-slate-600'" class="tab-btn relative px-5 py-3 text-sm font-semibold whitespace-nowrap transition border-b-2">
-                    Berbagi <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-500 rounded-full">{{ $trip->shares->count() }}</span>
+                <button @click="activeTab = 'sharing'" :class="activeTab === 'sharing' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'" class="px-5 py-2.5 text-xs font-bold rounded-xl whitespace-nowrap transition duration-200">
+                    Berbagi <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-slate-100/80 text-slate-500 rounded-full">{{ $trip->shares->count() }}</span>
                 </button>
             </div>
 
@@ -303,24 +309,33 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <!-- Left: Budget Predictor -->
                     <div class="lg:col-span-5">
-                        <div class="rounded-3xl p-6 shadow-lg border relative overflow-hidden text-white
-                            @if($prediction['is_sufficient']) bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 border-emerald-500
-                            @else bg-gradient-to-br from-rose-700 via-rose-800 to-red-950 border-rose-600 @endif">
-                            <h4 class="text-xs font-semibold uppercase tracking-wider text-white/70">Proyeksi Budget</h4>
-                            <div class="flex items-center gap-3 mt-3">
-                                <span class="text-4xl">{{ $prediction['is_sufficient'] ? '&#10003;' : '&#9888;' }}</span>
+                        <div class="rounded-[2rem] p-6 shadow-xl border relative overflow-hidden text-white transition duration-300 hover:scale-[1.01] hover:shadow-2xl
+                            @if($prediction['is_sufficient']) bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 border-emerald-400/40 shadow-emerald-500/10
+                            @else bg-gradient-to-br from-rose-500 via-rose-600 to-fuchsia-800 border-rose-400/40 shadow-rose-500/10 @endif">
+                            <!-- Background pattern -->
+                            <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 select-none pointer-events-none">
+                                <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                </svg>
+                            </div>
+                            
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-white/80">Proyeksi Budget</h4>
+                            <div class="flex items-center gap-3.5 mt-4">
+                                <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl backdrop-blur">
+                                    {!! $prediction['is_sufficient'] ? '🟢' : '⚠️' !!}
+                                </div>
                                 <div>
-                                    <h3 class="text-lg font-black">{{ $prediction['is_sufficient'] ? 'BUDGET CUKUP' : 'BUDGET TIDAK CUKUP' }}</h3>
-                                    <p class="text-xs text-white/60">Estimasi sampai tujuan</p>
+                                    <h3 class="text-xl font-black tracking-tight leading-tight">{{ $prediction['is_sufficient'] ? 'BUDGET CUKUP' : 'BUDGET TIDAK CUKUP' }}</h3>
+                                    <p class="text-xs text-white/70 mt-0.5">Estimasi sampai tujuan</p>
                                 </div>
                             </div>
-                            <div class="mt-5 space-y-2.5 bg-black/10 border border-white/10 rounded-2xl p-4 text-sm">
-                                <div class="flex justify-between"><span class="text-white/60">Sisa Anggaran:</span><span class="font-bold">Rp {{ number_format($prediction['remaining_budget'], 0, ',', '.') }}</span></div>
-                                <div class="flex justify-between"><span class="text-white/60">Est. Sisa Bensin:</span><span class="font-bold">Rp {{ number_format($prediction['estimated_fuel_remaining'], 0, ',', '.') }}</span></div>
-                                <div class="flex justify-between border-t border-white/10 pt-2"><span class="text-white/60">Proyeksi Realistis:</span><span class="font-extrabold">Rp {{ number_format($prediction['prediction']['realistic'], 0, ',', '.') }}</span></div>
+                            <div class="mt-6 space-y-3 bg-black/15 border border-white/10 rounded-2xl p-4.5 text-xs backdrop-blur-sm">
+                                <div class="flex justify-between items-center"><span class="text-white/70">Sisa Anggaran:</span><span class="font-bold">Rp {{ number_format($prediction['remaining_budget'], 0, ',', '.') }}</span></div>
+                                <div class="flex justify-between items-center"><span class="text-white/70">Est. Sisa Bensin:</span><span class="font-bold">Rp {{ number_format($prediction['estimated_fuel_remaining'], 0, ',', '.') }}</span></div>
+                                <div class="flex justify-between items-center border-t border-white/10 pt-2.5"><span class="text-white/70 font-semibold">Proyeksi Realistis:</span><span class="font-black text-sm text-yellow-300">Rp {{ number_format($prediction['prediction']['realistic'], 0, ',', '.') }}</span></div>
                             </div>
-                            <div class="mt-4 p-3 bg-white/10 border border-white/10 rounded-xl text-xs leading-relaxed">
-                                <strong class="block mb-1">Rekomendasi:</strong>{{ $prediction['suggestion'] }}
+                            <div class="mt-4.5 p-3 bg-white/15 border border-white/10 rounded-xl text-xs leading-relaxed backdrop-blur-sm">
+                                <strong class="block mb-1 text-white/95">💡 Rekomendasi:</strong>{{ $prediction['suggestion'] }}
                             </div>
                         </div>
                     </div>
@@ -328,7 +343,7 @@
                     <!-- Right: Waypoints + Category Breakdown -->
                     <div class="lg:col-span-7 space-y-6">
                         <!-- Category Breakdown -->
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                        <div class="glass-card rounded-[2rem] p-6 border-white/60">
                             <h3 class="text-sm font-bold text-slate-800 mb-4">Breakdown Kategori</h3>
                             @if($expensesByCategory->isEmpty())
                             <p class="text-xs text-slate-400 text-center py-6">Belum ada pengeluaran.</p>
@@ -354,7 +369,7 @@
                         </div>
 
                         <!-- Waypoints -->
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                        <div class="glass-card rounded-[2rem] p-6 border-white/60">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-sm font-bold text-slate-800">Waypoints</h3>
                                 @if(in_array($trip->status->value, ['planning', 'active']))
@@ -448,7 +463,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <!-- Expense List -->
                     <div class="lg:col-span-8">
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                        <div class="glass-card rounded-[2rem] p-6 border-white/60 shadow-lg">
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="text-sm font-bold text-slate-800">Semua Pengeluaran</h3>
                                 <!-- Tag Filter -->
@@ -470,42 +485,42 @@
                             @else
                             <div class="space-y-3">
                                 @foreach($trip->expenses->sortByDesc('spent_at') as $expense)
-                                <div class="flex items-center justify-between p-4 rounded-2xl border border-slate-50 hover:border-slate-100 transition gap-4 expense-item" data-tags="{{ $expense->tags->pluck('id')->implode(',') }}">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-xl p-2 bg-slate-50 rounded-xl">{{ $expense->category->icon() }}</span>
-                                        <div>
-                                            <div class="flex items-center gap-2 flex-wrap">
-                                                <span class="font-bold text-sm text-slate-800">{{ $expense->category->label() }}</span>
-                                                @if($expense->location_name)
-                                                <span class="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full truncate max-w-[120px]">{{ $expense->location_name }}</span>
-                                                @endif
-                                                @foreach($expense->tags as $tag)
-                                                <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: {{ $tag->color }}20; color: {{ $tag->color }}">{{ $tag->name }}</span>
-                                                @endforeach
-                                                @if($expense->is_recurring)
-                                                <span class="text-[10px] px-2 py-0.5 bg-violet-50 text-violet-600 rounded-full font-bold">Ulangan</span>
-                                                @endif
-                                            </div>
-                                            <p class="text-xs text-slate-400 mt-0.5">{{ $expense->note ?: '-' }} &middot; {{ $expense->spent_at->translatedFormat('d M, H:i') }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        @if($expense->receipt_path)
-                                        <a href="{{ asset('storage/' . $expense->receipt_path) }}" target="_blank" class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 hover:ring-2 hover:ring-indigo-300 transition">
-                                            <img src="{{ asset('storage/' . $expense->receipt_path) }}" class="w-full h-full object-cover" alt="Receipt">
-                                        </a>
-                                        @endif
-                                        <span class="font-extrabold text-sm text-slate-800 whitespace-nowrap">Rp {{ number_format($expense->amount, 0, ',', '.') }}</span>
-                                        <form method="POST" action="{{ route('expenses.destroy', [$trip, $expense]) }}" onsubmit="return confirm('Hapus?')">
-                                            @csrf @method('DELETE')
-                                            <button class="p-1.5 hover:bg-rose-50 text-rose-400 rounded-lg transition">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-slate-50 dark:border-slate-800 hover:border-slate-100 dark:hover:border-slate-700 transition gap-3 sm:gap-4 expense-item" data-tags="{{ $expense->tags->pluck('id')->implode(',') }}">
+                                     <div class="flex items-start sm:items-center gap-3">
+                                         <span class="text-xl p-2 bg-slate-50 dark:bg-slate-700 rounded-xl">{{ $expense->category->icon() }}</span>
+                                         <div>
+                                             <div class="flex items-center gap-2 flex-wrap">
+                                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200">{{ $expense->category->label() }}</span>
+                                                 @if($expense->location_name)
+                                                 <span class="text-[10px] px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-full truncate max-w-[120px]">{{ $expense->location_name }}</span>
+                                                 @endif
+                                                 @foreach($expense->tags as $tag)
+                                                 <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: {{ $tag->color }}20; color: {{ $tag->color }}">{{ $tag->name }}</span>
+                                                 @endforeach
+                                                 @if($expense->is_recurring)
+                                                 <span class="text-[10px] px-2 py-0.5 bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400 rounded-full font-bold">Ulangan</span>
+                                                 @endif
+                                             </div>
+                                             <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ $expense->note ?: '-' }} &middot; {{ $expense->spent_at->translatedFormat('d M, H:i') }}</p>
+                                         </div>
+                                     </div>
+                                     <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-3 sm:pt-0 border-t border-slate-50 dark:border-slate-800 sm:border-0">
+                                         @if($expense->receipt_path)
+                                         <a href="{{ asset('storage/' . $expense->receipt_path) }}" target="_blank" class="w-10 h-10 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-700 hover:ring-2 hover:ring-indigo-300 transition">
+                                             <img src="{{ asset('storage/' . $expense->receipt_path) }}" class="w-full h-full object-cover" alt="Receipt">
+                                         </a>
+                                         @endif
+                                         <span class="font-extrabold text-sm text-slate-800 dark:text-slate-200 whitespace-nowrap">Rp {{ number_format($expense->amount, 0, ',', '.') }}</span>
+                                         <form method="POST" action="{{ route('expenses.destroy', [$trip, $expense]) }}" onsubmit="return confirm('Hapus?')">
+                                             @csrf @method('DELETE')
+                                             <button class="p-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-400 dark:text-rose-500 rounded-lg transition cursor-pointer">
+                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                 </svg>
+                                             </button>
+                                         </form>
+                                     </div>
+                                 </div>
                                 @endforeach
                             </div>
                             @endif
@@ -515,7 +530,7 @@
                     <!-- Add Expense Form -->
                     <div class="lg:col-span-4">
                         @if(in_array($trip->status->value, ['planning', 'active']))
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4 sticky top-20">
+                        <div class="glass-card rounded-[2rem] p-6 border-white/60 space-y-4 sticky top-20 shadow-lg">
                             <h3 class="text-sm font-bold text-slate-800">Catat Pengeluaran</h3>
                             <form method="POST" action="{{ route('expenses.store', $trip) }}" enctype="multipart/form-data" class="space-y-3">
                                 @csrf
@@ -525,7 +540,7 @@
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-semibold text-slate-500 block mb-1">Kategori</label>
-                                    <select name="category" class="w-full border-slate-200 rounded-xl text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <select name="category" x-model="inlineCategory" class="w-full border-slate-200 rounded-xl text-sm focus:ring-indigo-500 focus:border-indigo-500">
                                         @foreach(App\Enums\ExpenseCategory::cases() as $cat)
                                         <option value="{{ $cat->value }}">{{ $cat->icon() }} {{ $cat->label() }}</option>
                                         @endforeach
@@ -537,7 +552,16 @@
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-semibold text-slate-500 block mb-1">Nama Lokasi</label>
-                                    <input type="text" name="location_name" placeholder="SPBU, Restoran, dll" class="w-full border-slate-200 rounded-xl text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <div class="relative flex gap-2">
+                                        <input type="text" name="location_name" x-model="inlineLocation" placeholder="SPBU, Restoran, dll" class="flex-1 border-slate-200 rounded-xl text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                        <button type="button" @click="autofillInlineLocation()" :disabled="inlineLoadingLocation" class="px-3.5 bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center border border-indigo-100 dark:border-indigo-900 transition disabled:opacity-50 cursor-pointer" title="Deteksi Lokasi GPS">
+                                            <svg x-show="!inlineLoadingLocation" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <div x-show="inlineLoadingLocation" x-cloak class="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Tags Multi-select -->
@@ -591,7 +615,7 @@
 
             <!-- TAB: Route & Map -->
             <div x-show="activeTab === 'route'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
-                <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm relative">
+                <div class="glass-card p-5 rounded-[2rem] border-white/60 shadow-lg relative">
                     <!-- Floating Smart Route Control Badges -->
                     <div class="absolute top-6 left-6 z-10 flex flex-wrap gap-1.5 bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-lg border border-slate-100/50 max-w-[calc(100%-3rem)] sm:max-w-none">
                         <span class="text-[10px] font-extrabold text-slate-500 px-1 self-center uppercase tracking-wider">Smart Route:</span>
@@ -632,9 +656,9 @@
                     <!-- Route alternatives -->
                     @if($trip->routes->count() > 1)
                     <div class="mt-4 space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700">Opsi Rute Tersimpan</h4>
+                        <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Opsi Rute Tersimpan</h4>
                         @foreach($trip->routes as $route)
-                        <div class="flex items-center justify-between p-3 rounded-xl {{ $route->is_selected ? 'bg-indigo-50 border border-indigo-200' : 'bg-slate-50' }}">
+                        <div class="flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-300 {{ $route->is_selected ? 'bg-indigo-50/70 border-indigo-200/50 shadow-sm' : 'bg-slate-50/50 border-slate-100' }}">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full {{ $route->is_selected ? 'bg-indigo-600' : 'bg-slate-300' }}"></span>
                                 <span class="text-xs font-semibold text-slate-700">{{ $route->route_name }}</span>
@@ -654,7 +678,7 @@
             <div x-show="activeTab === 'sharing'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Share Form -->
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <div class="glass-card rounded-[2rem] p-6 border-white/60 shadow-lg">
                         <h3 class="text-sm font-bold text-slate-800 mb-4">Bagikan Perjalanan</h3>
                         <form method="POST" action="{{ route('trips.share', $trip) }}" class="space-y-3">
                             @csrf
@@ -674,7 +698,7 @@
                     </div>
 
                     <!-- Shared Users List -->
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <div class="glass-card rounded-[2rem] p-6 border-white/60 shadow-lg">
                         <h3 class="text-sm font-bold text-slate-800 mb-4">Dibagikan Kepada</h3>
                         @if($trip->shares->isEmpty())
                         <p class="text-xs text-slate-400 text-center py-8">Belum dibagikan kepada siapapun.</p>
@@ -753,6 +777,11 @@
                 poiLoading: false,
                 poiMarkers: [],
                 tempWpMarker: null,
+                
+                // Inline expense form states
+                inlineCategory: 'fuel',
+                inlineLocation: '',
+                inlineLoadingLocation: false,
 
                 init() {
                     this.$watch('filterTag', (val) => this.filterExpenses(val));
@@ -776,6 +805,61 @@
                         if (!tagId) { el.style.display = ''; return; }
                         const tags = el.dataset.tags ? el.dataset.tags.split(',').map(Number) : [];
                         el.style.display = tags.includes(Number(tagId)) ? '' : 'none';
+                    });
+                },
+
+                async autofillInlineLocation() {
+                    if (!navigator.geolocation) {
+                        alert('Geolocation tidak didukung oleh browser Anda.');
+                        return;
+                    }
+                    this.inlineLoadingLocation = true;
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        try {
+                            let locationName = '';
+                            if (this.inlineCategory === 'fuel') {
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                const res = await fetch('/api/smart-route/nearest-fuel', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrfToken
+                                    },
+                                    body: JSON.stringify({ lat, lng, radius: 5000 })
+                                });
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    if (data.station) {
+                                        locationName = data.station.name;
+                                    }
+                                }
+                            }
+
+                            if (!locationName) {
+                                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`);
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    locationName = data.display_name.split(',')[0] || data.name || '';
+                                    if (data.address && data.address.road) {
+                                        locationName = data.address.road + (data.address.suburb ? ', ' + data.address.suburb : '');
+                                    }
+                                }
+                            }
+
+                            this.inlineLocation = locationName || `Titik GPS (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        } catch (e) {
+                            console.error(e);
+                            this.inlineLocation = `Titik GPS (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        } finally {
+                            this.inlineLoadingLocation = false;
+                        }
+                    }, (err) => {
+                        console.error(err);
+                        alert('Gagal mendapatkan lokasi GPS: ' + err.message);
+                        this.inlineLoadingLocation = false;
                     });
                 },
 

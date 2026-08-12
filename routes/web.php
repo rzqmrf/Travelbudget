@@ -77,6 +77,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('nearest-fuel', [RestStopController::class, 'getNearestFuelStation'])->name('smart-route.nearest-fuel');
     });
 
+    // Active Trips API for Quick Add modal
+    Route::get('api/trips/active', function () {
+        return response()->json(
+            auth()->user()->trips()
+                ->whereIn('status', ['planning', 'active'])
+                ->get(['id', 'name'])
+        );
+    })->name('api.trips.active');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

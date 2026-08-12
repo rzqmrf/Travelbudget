@@ -34,6 +34,14 @@ class ExpenseController extends Controller
             $expense->tags()->sync($request->tags);
         }
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengeluaran berhasil ditambahkan!',
+                'expense' => $expense
+            ]);
+        }
+
         return redirect()->route('trips.show', $trip)
             ->with('success', 'Pengeluaran berhasil ditambahkan!');
     }
