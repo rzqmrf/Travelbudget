@@ -30,7 +30,7 @@
 
             .route-card.selected {
                 transform: translateY(-1px);
-                box-shadow: 0 0 0 2px #4F46E5, 0 4px 12px rgb(79 70 229 / 0.2);
+                box-shadow: 0 0 0 2px #10B981, 0 4px 12px rgb(16 185 129 / 0.2);
             }
 
             .search-dropdown {
@@ -59,7 +59,7 @@
                     <p class="text-slate-500 text-sm mt-1">
                         Untuk menghitung konsumsi bensin dan estimasi biaya secara akurat, Anda harus mendaftarkan setidaknya satu kendaraan terlebih dahulu.
                     </p>
-                    <a href="{{ route('vehicles.create') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-600/10">
+                    <a href="{{ route('vehicles.create') }}" class="btn-primary mt-6 inline-flex items-center gap-2 px-5 py-2.5">
                         Tambah Kendaraan Sekarang
                     </a>
                 </div>
@@ -128,10 +128,10 @@
                                         <input type="checkbox" id="is_round_trip" name="is_round_trip"
                                             x-model="isRoundTrip" @change="recalculateFuel()"
                                             value="1" class="sr-only peer">
-                                        <div class="w-10 h-5 bg-slate-200 peer-checked:bg-indigo-600 rounded-full transition-colors"></div>
+                                        <div class="w-10 h-5 bg-slate-200 peer-checked:bg-emerald-600 rounded-full transition-colors"></div>
                                         <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
                                     </div>
-                                    <div>
+                                    <div class="flex-1">
                                         <span class="text-sm font-semibold text-slate-800">Pulang-Pergi (Round Trip)</span>
                                         <p class="text-[10px] text-slate-400">Jarak &amp; biaya bensin dikalikan 2</p>
                                     </div>
@@ -139,11 +139,11 @@
                             </div>
 
                             <!-- Return Date Picker -->
-                            <div x-show="isRoundTrip" x-transition x-cloak class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50 space-y-2">
+                            <div x-show="isRoundTrip" x-transition x-cloak class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100/50 space-y-2">
                                 <x-input-label for="return_date" value="Tanggal Kepulangan" />
                                 <input type="date" id="return_date" name="return_date"
                                     value="{{ old('return_date') }}"
-                                    class="block w-full border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm" />
+                                    class="block w-full border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl shadow-sm text-sm" />
                                 <x-input-error :messages="$errors->get('return_date')" class="mt-2" />
                             </div>
 
@@ -276,25 +276,25 @@
                             <div class="grid grid-cols-1 gap-3">
                                 <template x-for="(route, index) in routes" :key="index">
                                     <div @click="selectRoute(index)"
-                                         :class="selectedRouteIndex === index ? 'route-card selected border-indigo-600 bg-indigo-50/40' : 'route-card border-slate-100 hover:border-slate-200 bg-white'"
+                                         :class="selectedRouteIndex === index ? 'route-card selected border-emerald-500 bg-emerald-50/40 dark:bg-emerald-500/10' : 'route-card border-slate-100 dark:border-white/[0.05] hover:border-slate-200 bg-white dark:bg-[#161a16]'"
                                          class="p-5 rounded-2xl border shadow-sm cursor-pointer flex items-center justify-between gap-4">
                                         <div>
                                             <div class="flex items-center gap-2">
                                                 <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: routeColor(index) }"></span>
-                                                <span class="font-bold text-slate-800 text-sm" x-text="route.route_name"></span>
+                                                <span class="font-bold text-slate-800 dark:text-white text-sm" x-text="route.route_name"></span>
                                                 <span class="text-[10px] text-slate-400" x-text="route.summary ? '(' + route.summary + ')' : ''"></span>
                                             </div>
-                                            <div class="flex gap-4 mt-2 text-xs text-slate-500">
-                                                <span>📏 <strong class="text-slate-700" x-text="route.distance_km + ' km'"></strong></span>
-                                                <span>⏱️ <strong class="text-slate-700" x-text="formatDuration(route.duration_minutes)"></strong></span>
+                                            <div class="flex gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
+                                                <span>📏 <strong class="text-slate-700 dark:text-slate-300" x-text="route.distance_km + ' km'"></strong></span>
+                                                <span>⏱️ <strong class="text-slate-700 dark:text-slate-300" x-text="formatDuration(route.duration_minutes)"></strong></span>
                                             </div>
                                         </div>
                                         <div class="text-right shrink-0">
                                             <span class="text-[10px] text-slate-400 block">Est. Bensin</span>
-                                            <span class="text-base font-extrabold text-indigo-600"
+                                            <span class="text-base font-extrabold text-emerald-600 dark:text-emerald-400"
                                                 x-text="'Rp ' + formatRupiah(route.estimated_fuel_cost)"></span>
                                             <template x-if="isRoundTrip">
-                                                <span class="text-[10px] text-violet-500 block">Pulang-pergi (×2)</span>
+                                                <span class="text-[10px] text-emerald-500 block">Pulang-pergi (×2)</span>
                                             </template>
                                         </div>
                                     </div>
@@ -319,7 +319,7 @@
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                                 <div class="text-left sm:text-right" x-show="selectedRouteIndex !== null">
                                     <p class="text-xs text-slate-400 dark:text-slate-500">Total Estimasi Bensin</p>
-                                    <p class="text-lg font-extrabold text-indigo-700 dark:text-indigo-400"
+                                    <p class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400"
                                         x-text="'Rp ' + formatRupiah(currentFuelCost())"></p>
                                 </div>
                                 <x-primary-button class="w-full sm:w-auto justify-center py-3">

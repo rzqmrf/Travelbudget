@@ -403,6 +403,37 @@
         </div>
     </div>
 
+    {{-- PWA Install Banner --}}
+    <div x-show="showInstallBanner" x-cloak
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-4"
+        class="fixed top-20 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 p-4 rounded-2xl
+               bg-white dark:bg-[#141714] border border-emerald-200/80 dark:border-emerald-500/20 shadow-xl no-print">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18v-6m0 0l-3 3m3-3l3 3M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h4 class="text-xs font-bold text-slate-900 dark:text-white">Install TravelBudget App</h4>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">Pasang aplikasi di layar utama untuk akses cepat & hemat kuota.</p>
+                <div class="flex items-center gap-2 mt-3">
+                    <button @click="installPwa()" type="button" class="btn-primary text-xs py-1.5 px-3">
+                        Install Sekarang
+                    </button>
+                    <button @click="showInstallBanner = false" type="button" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-medium px-2 py-1">
+                        Nanti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Offline queue badge --}}
     <div x-show="offlineQueueCount > 0" x-cloak
         class="fixed bottom-20 left-4 z-50 px-3 py-2 text-xs font-bold rounded-2xl flex items-center gap-2 no-print
@@ -421,6 +452,7 @@
                 activeTrips: [], quickTripId: '', quickAmount: '',
                 quickCategory: 'fuel', quickNote: '', quickLocation: '',
                 quickLoadingLocation: false, offlineQueueCount: 0,
+                deferredPrompt: null, showInstallBanner: false,
 
                 init() {
                     const savedTheme = localStorage.theme;
@@ -429,8 +461,24 @@
                     document.documentElement.classList.toggle('dark', this.darkMode);
                     this.loadActiveTrips();
                     this.updateOfflineCount();
+                    
+                    window.addEventListener('beforeinstallprompt', (e) => {
+                        e.preventDefault();
+                        this.deferredPrompt = e;
+                        this.showInstallBanner = true;
+                    });
+
                     window.addEventListener('online', () => this.syncOfflineExpenses());
                     if (navigator.onLine) setTimeout(() => this.syncOfflineExpenses(), 2000);
+                },
+
+                async installPwa() {
+                    if (this.deferredPrompt) {
+                        this.deferredPrompt.prompt();
+                        const { outcome } = await this.deferredPrompt.userChoice;
+                        this.deferredPrompt = null;
+                        this.showInstallBanner = false;
+                    }
                 },
 
                 toggleDarkMode() {
